@@ -7,8 +7,15 @@ insert into Accounts (account_id, income) values ('6', '91796')
 
 # Write your MySQL query statement below
 
-SELECT category, COUNT(account_id) accounts_count
+SELECT cat.category, COUNT(grouped.account_id) accounts_count
 FROM (
+    SELECT 'Low Salary' AS category
+    UNION ALL
+    SELECT 'Average Salary'
+    UNION ALL
+    SELECT 'High Salary'
+) cat
+LEFT JOIN (
     SELECT
         CASE
             WHEN income < 20000 THEN 'Low Salary'
@@ -18,8 +25,5 @@ FROM (
         account_id
     FROM Accounts
 ) grouped
-GROUP BY category;
-
--- PENDING: Does not yet handle test cases where no accounts fall into a given income range
--- (e.g: no accounts with 'Low Salary' -> missing category in output)
--- to be fixed by ensuring all 3 categories appear even with 0 count
+ON cat.category = grouped.category
+GROUP BY cat.category;
